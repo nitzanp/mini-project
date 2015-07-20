@@ -7,6 +7,7 @@ public class ColorVertex extends Vertex {
 	private int id;
 	private Set<Integer> lv;
 	private int color;
+	private int nextColor;	//temp
 	private ColorVertex parent;
 	
 	public ColorVertex() {
@@ -55,11 +56,19 @@ public class ColorVertex extends Vertex {
 		this.parent = parent;
 	}
 	
+	public void setNextColor(int color) {
+		this.nextColor = color;
+	}
+	
+	public void switchToNextColor() {
+		this.color = nextColor;
+	}
+	
 	@Override
 	public String toString() {
-		String str = id + "";
-		str += parent != null ? "(" + parent.getId() + ")" : "";
-		return str;
+//		String str = id + "";
+//		str += parent != null ? "(" + parent.getId() + ")" : "";
+		return id + ":" + color;
 	}
 
 }

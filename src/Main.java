@@ -24,19 +24,15 @@ public class Main {
 		
 		Map<Integer, Set<ColorEdge>> forests = forestDecomposition(graph);
 			
-		for (java.util.Map.Entry<Integer, Set<ColorEdge>> forest : forests.entrySet()) {
-			String out = "F" + forest.getKey() + ": ";
-			for (ColorEdge edge : forest.getValue()) {
-				out += "(" + edge.getSource().toString() + "," + edge.getTarget().toString() + ")";
-			}
-			System.out.println(out);
-		}
+		printByForests(forests, false);
 		
 		for (RegularVertex v : graph.vertexSet()) {
 			System.out.println(v.getId() + ": " + v.getColorVertexes().toString());
 		}
 		
-//		threeVertexColoring(graph);
+		threeVertexColoring(graph);
+		
+		printByForests(forests, true);
 		
 //		for(DirectedGraph<ColorVertex, ColorEdge> forest : forests.values()) {
 //			threeVertexColoring(forest);
@@ -51,24 +47,81 @@ public class Main {
 //        System.out.println(graph.toString());
 	}
 	
-	private static void threeVertexColoring(DirectedGraph<ColorVertex, ColorEdge> forest) {
-		firstStep(forest);
+	private static void threeVertexColoring(DirectedGraph<RegularVertex, ColorEdge> graph) {
+		firstStep(graph);
+		shiftDown(graph);
 		
 	}
 
-	private static void firstStep(DirectedGraph<ColorVertex, ColorEdge> forest) {
-		int i = 0;
-		while (i < 3) {	//TODO
-			for (ColorVertex v : forest.vertexSet()) {
-				if (v.getParent() == null)
-					continue;
-				int newColor = findRigtmostBit(v, v.getParent());
-				System.out.println(v.getId() + " new color - " + newColor);
+	private static void shiftDown(DirectedGraph<RegularVertex, ColorEdge> graph) {
+		int nextColor;
+		for (RegularVertex vertex : graph.vertexSet()) {
+			for (ColorVertex v : vertex.getColorVertexes().values()) {
+				ColorVertex parent = v.getParent();
+				if (parent == null) {
+					nextColor = (v.getColor() == 0) ? 1 : 0;
+				}
+				else {
+					nextColor = parent.getColor();
+				}
+				v.setNextColor(nextColor);
 			}
-			System.out.println();
+		}
+		
+		//This is just because this is not in parallel 
+		for (RegularVertex vertex : graph.vertexSet()) {
+			for (ColorVertex v : vertex.getColorVertexes().values()) {
+				v.switchToNextColor();
+			}
+		}
+	}
+	
+
+	private static void firstStep(DirectedGraph<RegularVertex, ColorEdge> graph) {
+		int i = 0;
+		int iters = calcIters(graph.vertexSet().size());
+		
+		while (i < iters) {	
+			for (RegularVertex vertex : graph.vertexSet()) {
+				for (ColorVertex v : vertex.getColorVertexes().values()) {
+					int nextColor;
+					if (v.getParent() == null) {
+						nextColor = getRandomBit(v);
+					}
+					else {
+						nextColor = findRigtmostBit(v, v.getParent());
+					}
+					v.setNextColor(nextColor);
+				}
+			}
+			
+			//This is just because this is not in parallel 
+			for (RegularVertex vertex : graph.vertexSet()) {
+				for (ColorVertex v : vertex.getColorVertexes().values()) {
+					v.switchToNextColor();
+				}
+			}
+			
 			i++;
 		}
 		
+		System.out.println(graph.toString());
+		
+	}
+
+	private static int calcIters(double n) {
+		int count = 0;
+	    while (n >= 1) {
+	        n = Math.log(n) / Math.log(2);		//logb(n) = log(n) / log(b)
+	        count++;
+	    }
+	    return count;
+	}
+
+	private static int getRandomBit(ColorVertex v) {
+		// TODO make it random;
+		int vMask = v.getColor() & MASK;
+		return vMask;		//TODO - i = 0
 	}
 
 	private static int findRigtmostBit(ColorVertex vertex, ColorVertex parent) {
@@ -77,6 +130,8 @@ public class Main {
 		int i = 0;
 		int uMask, vMask;
 		
+//		String str = "v:" + v + " u:" + u;
+		
 		while (true) {
 			vMask = v & MASK;
 			uMask = u & MASK;
@@ -84,6 +139,8 @@ public class Main {
 				int ans = i;
 				ans = ans << 1;
 				ans += vMask;
+				
+//				System.out.println(str + " => " + ans);
 				return ans;				
 			}
 			i++;
@@ -197,11 +254,32 @@ public class Main {
 				RegularVertex source = (RegularVertex) edge.getSource();
 				RegularVertex target = (RegularVertex) edge.getTarget();
 				target.setParent(source, i);
-			}
-			
+			}			
 		}
 		
 		return forests;
+	}
+	
+	public static void printByForests(Map<Integer, Set<ColorEdge>> forests, boolean color) {
+		System.out.println();
+		for (java.util.Map.Entry<Integer, Set<ColorEdge>> forest : forests.entrySet()) {
+			int i = forest.getKey();
+			String out = "F" + i + ": ";
+			for (ColorEdge edge : forest.getValue()) {
+				RegularVertex source = (RegularVertex) edge.getSource();
+				RegularVertex target = (RegularVertex) edge.getTarget();
+				
+				if (color) {
+					out += "(" + source.getColorVertexAt(i);
+					out += "," + target.getColorVertexAt(i) + ")";
+				}
+				else {
+					out += "(" + source.toString() + "," + target.toString() + ")";
+				}
+			}
+			System.out.println(out);
+		}
+		System.out.println();
 	}
 
 
