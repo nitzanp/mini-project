@@ -31,7 +31,7 @@ public class ColorEdge extends DefaultEdge {
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return super.toString() + "color: " + color;
+		return  "color: " + color ;
 	}
 
 }

@@ -2,7 +2,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-public class ColorVertex {
+public class ColorVertex extends Vertex {
 	
 	private int id;
 	private Set<Integer> lv;
@@ -54,14 +54,12 @@ public class ColorVertex {
 	public void setParent(ColorVertex parent) {
 		this.parent = parent;
 	}
-
-	public boolean isSource(ColorVertex v) {
-		return this.id < v.getId();
-	}
 	
 	@Override
 	public String toString() {
-		return id + "";
+		String str = id + "";
+		str += parent != null ? "(" + parent.getId() + ")" : "";
+		return str;
 	}
 
 }
