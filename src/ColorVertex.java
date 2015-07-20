@@ -7,17 +7,20 @@ public class ColorVertex {
 	private int id;
 	private Set<Integer> lv;
 	private int color;
+	private ColorVertex parent;
 	
 	public ColorVertex() {
 		this.id = -1;
 		this.lv = new HashSet<Integer>();
-		this.color = 0;
+		this.color = id;
+		this.parent = null;
 	}
 	
 	public ColorVertex(int id) {
 		this.id = id;
 		this.lv = new HashSet<Integer>();
-		this.color = 0;
+		this.color = id;
+		this.parent = null;
 	}
 
 	public int getId() {
@@ -44,6 +47,14 @@ public class ColorVertex {
 		this.color = color;
 	}
 	
+	public ColorVertex getParent() {
+		return parent;
+	}
+
+	public void setParent(ColorVertex parent) {
+		this.parent = parent;
+	}
+
 	public boolean isSource(ColorVertex v) {
 		return this.id < v.getId();
 	}

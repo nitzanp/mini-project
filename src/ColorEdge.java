@@ -8,7 +8,8 @@ public class ColorEdge extends DefaultEdge {
 	
 	public ColorEdge() {
 		super();
-		this.setColor(0);
+		this.color = 0;
+		this.forestId = 0;
 	}
 
 	public int getColor() {

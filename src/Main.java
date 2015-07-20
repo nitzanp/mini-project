@@ -1,12 +1,9 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
-import org.jgraph.graph.DefaultEdge;
 import org.jgrapht.DirectedGraph;
-import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleDirectedGraph;
-import org.jgrapht.graph.SimpleGraph;
 
 
 public class Main {
@@ -19,19 +16,19 @@ public class Main {
 		
 		undirectToDirect(graph);
 		
-		List<DirectedGraph<ColorVertex, ColorEdge>> forests= forestDecomposition(graph);
+		Map<Integer, DirectedGraph<ColorVertex, ColorEdge>> forests= forestDecomposition(graph);
 		
 		System.out.println(forests.toString());
 		
-		int i=0;
-		for (DirectedGraph<ColorVertex, ColorEdge> forest : forests) {
+		int i = 1;
+		for (DirectedGraph<ColorVertex, ColorEdge> forest : forests.values()) {
 			System.out.println("F" + i + ": " + forest.toString());
 			i++;
 		}
 		
-//		for(DirectedGraph<ColorVertex, ColorEdge> forest : forests) {
-//			threeVertexColoring(forest);
-//		}
+		for(DirectedGraph<ColorVertex, ColorEdge> forest : forests.values()) {
+			threeVertexColoring(forest);
+		}
 //		
 //		for(DirectedGraph<ColorVertex, ColorEdge> forest : forests) {
 //			treeEdgeColor(forest);
@@ -42,6 +39,16 @@ public class Main {
         System.out.println(graph.toString());
 	}
 	
+	private static void threeVertexColoring(DirectedGraph<ColorVertex, ColorEdge> forest) {
+		firstStep(forest);
+		
+	}
+
+	private static void firstStep(DirectedGraph<ColorVertex, ColorEdge> forest) {
+		
+		
+	}
+
 	private static void addEdge(ColorVertex source, ColorVertex target,
 			DirectedGraph<ColorVertex, ColorEdge> g) {
 		ColorEdge edge = new ColorEdge();
@@ -77,31 +84,35 @@ public class Main {
 			if (v2.isSource(v1)) {
 				graph.removeEdge(edge);
 				addEdge(v2, v1, graph);
+				v1.setParent(v2);
 			}
-
+			else {
+				v2.setParent(v1);
+			}
+			
 		}
 	}
 	
 	
-	private static List<DirectedGraph<ColorVertex, ColorEdge>> forestDecomposition(
+	private static Map<Integer, DirectedGraph<ColorVertex, ColorEdge>> forestDecomposition(
 			DirectedGraph<ColorVertex, ColorEdge> graph) {
-		List<DirectedGraph<ColorVertex, ColorEdge>> forests = 
-				new ArrayList<DirectedGraph<ColorVertex,ColorEdge>>();
-		forests.add(new SimpleDirectedGraph<ColorVertex, ColorEdge>(ColorEdge.class));
+		Map<Integer, DirectedGraph<ColorVertex, ColorEdge>> forests = 
+				new HashMap<Integer, DirectedGraph<ColorVertex,ColorEdge>>();
+		//forests.add(new SimpleDirectedGraph<ColorVertex, ColorEdge>(ColorEdge.class));
 		
 		Set<ColorVertex> vertexs = graph.vertexSet();
 		for (ColorVertex vertex : vertexs) {
-			int i=1;
+			int i = 1;
 			Set<ColorEdge> edges = graph.edgesOf(vertex);
 			for (ColorEdge edge : edges) {
 				if (edge.getSource() == vertex) {
 					edge.setForestId(i);
 					DirectedGraph<ColorVertex, ColorEdge> forest;
-					if (forests.size() <= i) {
-						forest = new SimpleDirectedGraph<ColorVertex, ColorEdge>(ColorEdge.class);
+					if (forests.containsKey(i)) {
+						forest = forests.get(i);
 					}
 					else {
-						forest = forests.get(i);
+						forest = new SimpleDirectedGraph<ColorVertex, ColorEdge>(ColorEdge.class);
 					}
 					ColorVertex target = (ColorVertex)edge.getTarget();
 					if (!forest.containsVertex(vertex)) {
@@ -111,7 +122,7 @@ public class Main {
 						forest.addVertex(target);
 					}
 					forest.addEdge(vertex, target, edge);
-					forests.add(i, forest);					
+					forests.put(i, forest);					
 					
 					i++;
 				}
