@@ -264,12 +264,13 @@ public class Main {
 			}
 		}
 		
-		for (java.util.Map.Entry<Integer, Set<ColorEdge>> forest : forests.entrySet()) {
+		for (Entry<Integer, Set<ColorEdge>> forest : forests.entrySet()) {
 			int i = forest.getKey();
 			for (ColorEdge edge : forest.getValue()) {
 				RegularVertex source = (RegularVertex) edge.getSource();
 				RegularVertex target = (RegularVertex) edge.getTarget();
 				target.setParent(source, i);
+				source.addChild(target, i);
 			}			
 		}
 		

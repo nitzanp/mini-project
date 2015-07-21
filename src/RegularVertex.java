@@ -58,11 +58,14 @@ public class RegularVertex extends Vertex {
 		if (!colorVertexes.containsKey(i)) {
 			colorVertexes.put(i, new ColorVertex(id));
 		}
-		
 	}
 
 	public void setParent(RegularVertex parent, int i) {
 		colorVertexes.get(i).setParent(parent.getColorVertexAt(i));		
+	}
+	
+	public void addChild(RegularVertex child, int i) {
+		colorVertexes.get(i).addChild(child.getColorVertexAt(i));
 	}
 	
 	@Override

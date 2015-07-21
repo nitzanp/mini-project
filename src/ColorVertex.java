@@ -7,14 +7,16 @@ public class ColorVertex extends Vertex {
 	private int id;
 	private Set<Integer> lv;
 	private int color;
-	private int nextColor;	//temp
+	private int nextColor;	
 	private ColorVertex parent;
+	private Set<ColorVertex> childs;
 	
 	public ColorVertex() {
 		this.id = -1;
 		this.lv = new HashSet<Integer>();
 		this.color = id;
 		this.parent = null;
+		this.childs = new HashSet<ColorVertex>();
 	}
 	
 	public ColorVertex(int id) {
@@ -22,6 +24,7 @@ public class ColorVertex extends Vertex {
 		this.lv = new HashSet<Integer>();
 		this.color = id;
 		this.parent = null;
+		this.childs = new HashSet<ColorVertex>();
 	}
 
 	public int getId() {
@@ -58,6 +61,14 @@ public class ColorVertex extends Vertex {
 	
 	public void setNextColor(int color) {
 		this.nextColor = color;
+	}
+	
+	public Set<ColorVertex> getChilds() {
+		return this.childs;
+	}
+	
+	public void addChild (ColorVertex child) {
+		this.childs.add(child);
 	}
 	
 	public void switchToNextColor() {
