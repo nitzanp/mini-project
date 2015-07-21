@@ -49,31 +49,104 @@ public class Main {
 	private static void forestEdgeColor(Integer i, Set<ColorEdge> edges) {
 		
 		//get the vertex, is there another way?
-		Set<ColorVertex> vertexes = new HashSet<ColorVertex>();
+		Set<RegularVertex> vertexes = new HashSet<RegularVertex>();
 		for (ColorEdge edge : edges) {
 			RegularVertex source = (RegularVertex) edge.getSource();
 			RegularVertex target = (RegularVertex) edge.getTarget();
-			vertexes.add(source.getColorVertexAt(i));
-			vertexes.add(target.getColorVertexAt(i));
+			vertexes.add(source);
+			vertexes.add(target);
 		}
 		
-		for (ColorVertex vertex : vertexes) {
-			vertex.vertexForestEdgeColor();
+		for (RegularVertex vertex : vertexes) {
+			vertexForestEdgeColor(vertex, i);
 		}
 		
+	}
+	
+	public static void vertexForestEdgeColor(RegularVertex v, int forest) {
+		//vertex is the colorVertex of v in this forest.
+		ColorVertex vertex = v.getColorVertexAt(forest);
+		for (int i = 0; i < 3; i++) {
+			if (vertex.getColor() == i) {
+				for (RegularVertex w : vertex.getChilds()) {
+					int nextColor = findFreeColor(v, w);
+					v.addToLv(nextColor);
+					//TODO - should mark nextColor as the color of the edge (v,w)? 
+					
+					//SEND phi(v,w)=nextColor to w
+					w.send(nextColor);
+				}
+			}
+			
+			//RECIVE messages
+			v.readMailBox();
+			
+			//SEND lv to all neighbors		
+		}
+		
+	}
+
+	private static int findFreeColor(RegularVertex v, RegularVertex w) {
+		for (int i = 0; i < 2 * DELTA - 1; i++) {
+			if (!v.getLv().contains(i) && !w.getLv().contains(i)) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	private static void threeVertexColoring(DirectedGraph<RegularVertex, ColorEdge> graph) {
 		firstStep(graph);
 		shiftDown(graph);
+		elimination(graph);	
+	}
+
+	private static void elimination(DirectedGraph<RegularVertex, ColorEdge> graph) {
+		for (int i = 3; i < 6; i++) {
+			elimination(graph, i);
+		}
 		
+	}
+
+	private static void elimination(DirectedGraph<RegularVertex, ColorEdge> graph, int alpha) {
+				
+		for (RegularVertex vertex : graph.vertexSet()) {
+			for (ColorVertex v : vertex.getColorVertexes().values()) {
+				int forest = v.getForest();
+				// SEND my color to all of my neighbors.
+
+				if (v.getColor() == alpha) {
+					
+					//RECIVE messages from my neighbors
+					//temp way to get the messages
+					Set<Integer> messages = new HashSet<Integer>();
+					messages.add(v.getParent().getColorVertexAt(forest).getColor());
+					for (RegularVertex child : v.getChilds()) {
+						messages.add(child.getColorVertexAt(forest).getColor());
+					}
+					
+					int nextColor = findFreeColor(messages);
+					v.setColor(nextColor);
+				}			
+			}		
+		}		
+	}
+
+	private static int findFreeColor(Set<Integer> messages) {
+		for (int i = 0; i < DELTA + 1; i++) {
+			if (!messages.contains(i)) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	private static void shiftDown(DirectedGraph<RegularVertex, ColorEdge> graph) {
 		int nextColor;
 		for (RegularVertex vertex : graph.vertexSet()) {
 			for (ColorVertex v : vertex.getColorVertexes().values()) {
-				ColorVertex parent = v.getParent();
+				int forest = v.getForest();
+				ColorVertex parent = v.getParent().getColorVertexAt(forest);
 				if (parent == null) {
 					nextColor = (v.getColor() == 0) ? 1 : 0;
 				}
@@ -101,11 +174,12 @@ public class Main {
 			for (RegularVertex vertex : graph.vertexSet()) {
 				for (ColorVertex v : vertex.getColorVertexes().values()) {
 					int nextColor;
-					if (v.getParent() == null) {
+					ColorVertex parent = v.getParent().getColorVertexAt(v.getForest());
+					if (parent == null) {
 						nextColor = getRandomBit(v);
 					}
 					else {
-						nextColor = findRigtmostBit(v, v.getParent());
+						nextColor = findRigtmostBit(v, parent);
 					}
 					v.setNextColor(nextColor);
 				}

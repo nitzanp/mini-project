@@ -5,26 +5,25 @@ import java.util.Set;
 public class ColorVertex extends Vertex {
 	
 	private int id;
-	private Set<Integer> lv;
+	private int forest;
 	private int color;
 	private int nextColor;	
-	private ColorVertex parent;
-	private Set<ColorVertex> childs;
+	private RegularVertex parent;
+	private Set<RegularVertex> childs;
 	
 	public ColorVertex() {
 		this.id = -1;
-		this.lv = new HashSet<Integer>();
 		this.color = id;
 		this.parent = null;
-		this.childs = new HashSet<ColorVertex>();
+		this.childs = new HashSet<RegularVertex>();
 	}
 	
-	public ColorVertex(int id) {
+	public ColorVertex(int id, int forest) {
 		this.id = id;
-		this.lv = new HashSet<Integer>();
 		this.color = id;
+		this.forest = forest;
 		this.parent = null;
-		this.childs = new HashSet<ColorVertex>();
+		this.childs = new HashSet<RegularVertex>();
 	}
 
 	public int getId() {
@@ -35,12 +34,12 @@ public class ColorVertex extends Vertex {
 		this.id = id;
 	}
 
-	public Set<Integer> getLv() {
-		return lv;
+	public int getForest() {
+		return forest;
 	}
 
-	public void setLv(Set<Integer> lv) {
-		this.lv = lv;
+	public void setForest(int forest) {
+		this.forest = forest;
 	}
 
 	public int getColor() {
@@ -51,11 +50,11 @@ public class ColorVertex extends Vertex {
 		this.color = color;
 	}
 	
-	public ColorVertex getParent() {
+	public RegularVertex getParent() {
 		return parent;
 	}
 
-	public void setParent(ColorVertex parent) {
+	public void setParent(RegularVertex parent) {
 		this.parent = parent;
 	}
 	
@@ -63,11 +62,11 @@ public class ColorVertex extends Vertex {
 		this.nextColor = color;
 	}
 	
-	public Set<ColorVertex> getChilds() {
+	public Set<RegularVertex> getChilds() {
 		return this.childs;
 	}
 	
-	public void addChild (ColorVertex child) {
+	public void addChild (RegularVertex child) {
 		this.childs.add(child);
 	}
 	
@@ -75,12 +74,6 @@ public class ColorVertex extends Vertex {
 		this.color = nextColor;
 	}
 	
-	public void vertexForestEdgeColor() {
-		for (int i = 0; i < 3; i++) {
-			
-		}
-		
-	}
 	
 	@Override
 	public String toString() {
@@ -88,5 +81,6 @@ public class ColorVertex extends Vertex {
 //		str += parent != null ? "(" + parent.getId() + ")" : "";
 		return id + ":" + color;
 	}
+
 
 }

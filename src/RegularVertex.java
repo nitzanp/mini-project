@@ -9,6 +9,8 @@ public class RegularVertex extends Vertex {
 	private Map<Integer, ColorVertex> colorVertexes;
 	private int id;
 	private Set<Integer> lv;
+	private Set<Integer> mailBox;		//this is juse a tmp way to send messages.
+
 	
 	public RegularVertex() {
 		this.id = -1;
@@ -20,6 +22,7 @@ public class RegularVertex extends Vertex {
 		this.id = id;
 		this.lv = new HashSet<Integer>();
 		this.colorVertexes = new HashMap<Integer, ColorVertex>();
+		this.mailBox = new HashSet<Integer>();
 	}
 
 	public int getId() {
@@ -34,8 +37,8 @@ public class RegularVertex extends Vertex {
 		return lv;
 	}
 
-	public void setLv(Set<Integer> lv) {
-		this.lv = lv;
+	public void addToLv(int color) {
+		this.lv.add(color);
 	}
 
 	public Map<Integer, ColorVertex> getColorVertexes() {
@@ -56,16 +59,26 @@ public class RegularVertex extends Vertex {
 
 	public void addToForest(int i) {
 		if (!colorVertexes.containsKey(i)) {
-			colorVertexes.put(i, new ColorVertex(id));
+			colorVertexes.put(i, new ColorVertex(id, i));
 		}
 	}
 
 	public void setParent(RegularVertex parent, int i) {
-		colorVertexes.get(i).setParent(parent.getColorVertexAt(i));		
+		colorVertexes.get(i).setParent(parent);		
 	}
 	
 	public void addChild(RegularVertex child, int i) {
-		colorVertexes.get(i).addChild(child.getColorVertexAt(i));
+		colorVertexes.get(i).addChild(child);
+	}
+	
+	public void send(int color) {
+		this.mailBox.add(color);
+	}
+	
+	public void readMailBox() {
+		for (int color : mailBox) {
+			lv.add(color);
+		}
 	}
 	
 	@Override
