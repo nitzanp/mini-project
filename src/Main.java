@@ -1,7 +1,7 @@
-import java.security.KeyStore.Entry;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.jgrapht.DirectedGraph;
@@ -11,6 +11,7 @@ import org.jgrapht.graph.SimpleDirectedGraph;
 public class Main {
 	
 	private final static int MASK = 0x1;
+	private static int DELTA;
 	
 	public static void main(String[] args) {
 		DirectedGraph<RegularVertex, ColorEdge> undirect =
@@ -23,6 +24,8 @@ public class Main {
 		undirectToDirect(undirect, graph);
 		
 		Map<Integer, Set<ColorEdge>> forests = forestDecomposition(graph);
+		
+		DELTA = forests.size();
 			
 		printByForests(forests, false);
 		
@@ -33,20 +36,33 @@ public class Main {
 		threeVertexColoring(graph);
 		
 		printByForests(forests, true);
-		
-//		for(DirectedGraph<ColorVertex, ColorEdge> forest : forests.values()) {
-//			threeVertexColoring(forest);
-//		}
-//		
-//		for(DirectedGraph<ColorVertex, ColorEdge> forest : forests) {
-//			treeEdgeColor(forest);
-//		}
+			
+		for (Entry<Integer, Set<ColorEdge>> forest : forests.entrySet()) {
+			forestEdgeColor(forest.getKey(), forest.getValue());
+		}
 		
 		//buildGraphFromForests();
 		        
 //        System.out.println(graph.toString());
 	}
 	
+	private static void forestEdgeColor(Integer i, Set<ColorEdge> edges) {
+		
+		//get the vertex, is there another way?
+		Set<ColorVertex> vertexes = new HashSet<ColorVertex>();
+		for (ColorEdge edge : edges) {
+			RegularVertex source = (RegularVertex) edge.getSource();
+			RegularVertex target = (RegularVertex) edge.getTarget();
+			vertexes.add(source.getColorVertexAt(i));
+			vertexes.add(target.getColorVertexAt(i));
+		}
+		
+		for (ColorVertex vertex : vertexes) {
+			vertex.vertexForestEdgeColor();
+		}
+		
+	}
+
 	private static void threeVertexColoring(DirectedGraph<RegularVertex, ColorEdge> graph) {
 		firstStep(graph);
 		shiftDown(graph);
@@ -111,7 +127,7 @@ public class Main {
 
 	private static int calcIters(double n) {
 		int count = 0;
-	    while (n >= 1) {
+	    while (n >= 1) {		//check if it 2
 	        n = Math.log(n) / Math.log(2);		//logb(n) = log(n) / log(b)
 	        count++;
 	    }

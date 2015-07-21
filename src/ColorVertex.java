@@ -64,6 +64,13 @@ public class ColorVertex extends Vertex {
 		this.color = nextColor;
 	}
 	
+	public void vertexForestEdgeColor() {
+		for (int i = 0; i < 3; i++) {
+			
+		}
+		
+	}
+	
 	@Override
 	public String toString() {
 //		String str = id + "";
