@@ -46,9 +46,9 @@ public class Main {
 //        System.out.println(graph.toString());
 	}
 	
-	private static void forestEdgeColor(Integer i, Set<ColorEdge> edges) {
+	private static void forestEdgeColor(Integer forest, Set<ColorEdge> edges) {
 		
-		//get the vertex, is there another way?
+		//get the vertexes, is there another way?
 		Set<RegularVertex> vertexes = new HashSet<RegularVertex>();
 		for (ColorEdge edge : edges) {
 			RegularVertex source = (RegularVertex) edge.getSource();
@@ -58,7 +58,7 @@ public class Main {
 		}
 		
 		for (RegularVertex vertex : vertexes) {
-			vertexForestEdgeColor(vertex, i);
+			vertexForestEdgeColor(vertex, forest);
 		}
 		
 	}
@@ -66,12 +66,12 @@ public class Main {
 	public static void vertexForestEdgeColor(RegularVertex v, int forest) {
 		//vertex is the colorVertex of v in this forest.
 		ColorVertex vertex = v.getColorVertexAt(forest);
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 3; i++) {		//maybe move this loop out from this method.
 			if (vertex.getColor() == i) {
 				for (RegularVertex w : vertex.getChilds()) {
 					int nextColor = findFreeColor(v, w);
 					v.addToLv(nextColor);
-					//TODO - should mark nextColor as the color of the edge (v,w)? 
+					//TODO - should mark nextColor as the color of the edge (v,w)
 					
 					//SEND phi(v,w)=nextColor to w
 					w.send(nextColor);
